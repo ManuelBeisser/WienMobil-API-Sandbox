@@ -1,4 +1,6 @@
 import datetime as dt
+import json
+import os.path
 from datetime import datetime
 
 import requests
@@ -72,15 +74,32 @@ def time_conversion(timestamp: int) -> str:
     time_string = vienna_time.strftime("%d/%m/%Y - %H:%M")
     return time_string
 
+
+def output_to_json(data: dict, timestamp: str, filename: str):
+    timestamped_data = {
+            timestamp: data
+    }
+
+    try:
+        with open(filename, "r") as fh:
+            read_data = fh.read()
+            old_data = json.loads(read_data)
+        old_data.append(timestamped_data)
+        with open(filename, "w") as fh:
+            data_dumper = json.dumps(old_data)
+            fh.write(data_dumper)
+    except:  # NOTE: what error would I actually need to handle here?
+        with open(filename, "w") as fh:
+            array_starter = [timestamped_data]
+            json.dump(array_starter, fp=fh)
+
+
 if __name__ == "__main__":
     status = fetcher("https://api.wstw.at/gateway/WL_WIENMOBIL_API/1/station_status.json")
     information = fetcher("https://api.wstw.at/gateway/WL_WIENMOBIL_API/1/station_information.json")
     timestamp = status["last_updated"]
 
-    # print(status_cleaner(status))
-    # print(len(status_cleaner(status)))
-    # print(information_cleaner(information))
-    # print(len(information_cleaner(information)))
+    time_string = time_conversion(timestamp)
+    data = join_tables(information_cleaner(information), status_cleaner(status))
 
-    print(join_tables(information_cleaner(information), status_cleaner(status)))
-    print(time_conversion(timestamp))
+    output_to_json(data, time_string, "output.json")

@@ -1,8 +1,8 @@
-import pandas as pd
 import requests
 
 # TODO: combine names and stations
-# TODO: write output function
+# TODO: add time parser
+# TODO: write output function -> json.dump()!
 
 
 def fetcher(url: str) -> dict:
@@ -28,7 +28,7 @@ def status_cleaner(status: dict) -> dict:
     return station_dict
 
 
-def information_cleaner(information: dict) -> dict: 
+def information_cleaner(information: dict) -> dict:
     names = information["data"]["stations"]
     names_dict = dict()
     for name in names:
@@ -37,17 +37,38 @@ def information_cleaner(information: dict) -> dict:
         station_capacity = name.get("capacity")  # int
 
         names_id_dict = {
-            "station_name": station_name, 
+            "station_name": station_name,
             "station_capacity": station_capacity
         }
         names_dict[station_id] = names_id_dict
     return names_dict
 
+def join_tables(info: dict, status: dict) -> dict:
+    joined_dict = dict()
+    for key, values in info.items():
+        if key in status.keys():
+            station_name = info[key]["station_name"]
+            station_capacity = info[key]["station_capacity"]
+            avail_bikes = status[key]["avail_bikes"]
+            rent_status = status[key]["rent_status"]
+            return_status = status[key]["return_status"]
+
+            station_data_dict = {
+                    "station_capacity": station_capacity,
+                    "avail_bikes": avail_bikes,
+                    "rent_status": rent_status,
+                    "return_status": return_status
+            }
+            joined_dict[station_name] = station_data_dict
+    return joined_dict
+
 if __name__ == "__main__":
     status = fetcher("https://api.wstw.at/gateway/WL_WIENMOBIL_API/1/station_status.json")
     information = fetcher("https://api.wstw.at/gateway/WL_WIENMOBIL_API/1/station_information.json")
 
-    print(status_cleaner(status))
-    print(len(status_cleaner(status)))
-    print(information_cleaner(information))
-    print(len(information_cleaner(information)))
+    # print(status_cleaner(status))
+    # print(len(status_cleaner(status)))
+    # print(information_cleaner(information))
+    # print(len(information_cleaner(information)))
+
+    print(join_tables(information_cleaner(information), status_cleaner(status)))

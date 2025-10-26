@@ -1,0 +1,25 @@
+name: Fetch from API
+on: 
+  workflow_dispatch:
+  schedule:
+    - cron: "0 */2 * * *"
+
+jobs:
+  fetcher:
+    name: data_fetcher
+    runs-on: ubuntu-latest
+    permissions: 
+      contents: write
+    steps: 
+      - name: Prep System
+        run: pip install requests
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Fetch Data
+        run: |
+          python 
+
+      - name: Commit Data
+        uses: 

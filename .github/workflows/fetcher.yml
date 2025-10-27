@@ -19,7 +19,9 @@ jobs:
 
       - name: Fetch Data
         run: |
-          python 
+          python file_reader.py 
 
       - name: Commit Data
-        uses: 
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: feched data

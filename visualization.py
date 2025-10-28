@@ -2,6 +2,7 @@ import json
 
 import matplotlib.pyplot as plt
 
+# FIX: capacity is only calculated for those that have it! so no 100% of stations!
 # TODO: make plot of the last 24hrs avail. bikes
 
 
@@ -39,10 +40,23 @@ def calculate_capacity(data: list) -> list:
     return results
 
 
+def calculate_availability(data: list):
+    results = dict()
+    for entry in data:
+        for time, stations in entry.items():
+            timestamp_availability = int()
+            for name, station_data in stations.items():
+                timestamp_availability += station_data["avail_bikes"]
+            results[time] = timestamp_availability
+    return results
+
+
 def main():
     data = data_import("output.json")
 
     capacity_data = calculate_capacity(data)
+
+    print(calculate_availability(data))
 
     # plot pie chart
     fig, ax = plt.subplots()

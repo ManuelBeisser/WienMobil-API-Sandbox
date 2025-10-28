@@ -2,7 +2,6 @@ import json
 
 import matplotlib.pyplot as plt
 
-# TODO: make pie plot of the amount of stations over capacity
 # TODO: make plot of the last 24hrs avail. bikes
 
 
@@ -13,7 +12,7 @@ def data_import(text_file: str) -> list:
     return data
 
 
-def calculate_overcapacity(data: list) -> list:
+def calculate_capacity(data: list) -> list:
     over_capacity_counter = int()
     at_capacity_counter = int()
     under_capacity_counter = int()
@@ -42,7 +41,13 @@ def calculate_overcapacity(data: list) -> list:
 
 def main():
     data = data_import("output.json")
-    print(calculate_overcapacity(data))
+
+    capacity_data = calculate_capacity(data)
+
+    # plot pie chart
+    fig, ax = plt.subplots()
+    ax.pie(capacity_data, labels=["Over Capacity", "At Capacity", "Under Capacity"], colors=["red", "yellow", "green"])
+    plt.savefig("capacity_pie.png")
 
 
 if __name__ == "__main__":
